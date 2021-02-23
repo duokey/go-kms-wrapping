@@ -11,6 +11,7 @@ const (
 	AliCloudKMS     = "alicloudkms"
 	AWSKMS          = "awskms"
 	AzureKeyVault   = "azurekeyvault"
+	DuoKeyKMS       = "duokeykms"
 	GCPCKMS         = "gcpckms"
 	HuaweiCloudKMS  = "huaweicloudkms"
 	MultiWrapper    = "multiwrapper"
