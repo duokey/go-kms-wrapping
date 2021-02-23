@@ -9,15 +9,14 @@ import (
 // Encrypt returns a base64 encoded string
 func (k *mockKMS) Encrypt(input *kms.EncryptInput) (*kms.EncryptOutput, error) {
 
-	b64encoded := make([]byte, base64.StdEncoding.EncodedLen(len(input.Plaintext)))
-	base64.StdEncoding.Encode(b64encoded, input.Plaintext)
+	b64encoded := make([]byte, base64.StdEncoding.EncodedLen(len(input.Payload)))
+	base64.StdEncoding.Encode(b64encoded, input.Payload)
 
-	return &kms.EncryptOutput{
-		Result: {
-			KeyID:   input.KeyID,
-			Payload: b64encoded,
-		},
-	}, nil
+	r := &kms.EncryptOutput{}
+	r.Result.KeyID = input.KeyID
+	r.Result.Payload = b64encoded
+
+	return r
 }
 
 // Decrypt returns a decoded base64 string
@@ -35,10 +34,9 @@ func (k *mockKMS) Decrypt(input *kms.DecryptInput) (*kms.DecryptOutput, error) {
 		b64decoded = b64decoded[:len]
 	}
 
-	return &kms.DecryptOutput{
-		Result: {
-			KeyID:     input.KeyID,
-			Plaintext: b64decoded,
-		},
-	}, nil
+	r := &kms.DecryptOutput{}
+	r.Result.KeyID = input.KeyID
+	r.Result.Payload = b64encoded
+
+	return r
 }
