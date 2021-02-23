@@ -221,7 +221,7 @@ func (k *Wrapper) Encrypt(_ context.Context, plaintext, aad []byte) (blob *wrapp
 	input := &kms.EncryptInput{
 		KeyID: k.keyID,
 		VaultID: k.vaultID,
-		Plaintext: env.Key,
+		Payload: env.Key,
 	}
 
 	output, err := k.client.Encrypt(input)
@@ -230,7 +230,7 @@ func (k *Wrapper) Encrypt(_ context.Context, plaintext, aad []byte) (blob *wrapp
 	}
 
 	// Store the current key ID
-	keyID := output.KeyID
+	keyID := output.Result.KeyID
 	k.currentKeyID.Store(keyID)
 
 	ret := &wrapping.EncryptedBlobInfo{
@@ -238,7 +238,7 @@ func (k *Wrapper) Encrypt(_ context.Context, plaintext, aad []byte) (blob *wrapp
 		IV:         env.IV,
 		KeyInfo: &wrapping.KeyInfo{
 			KeyID:      keyID,
-			WrappedKey: output.Ciphertext,
+			WrappedKey: output.Result.Payload,
 		},
 	}
 
@@ -259,7 +259,7 @@ func (k *Wrapper) Decrypt(_ context.Context, in *wrapping.EncryptedBlobInfo, aad
 	input := &kms.DecryptInput{
 		KeyID: in.KeyInfo.KeyID,
 		VaultID: k.vaultID,
-		Ciphertext: in.KeyInfo.WrappedKey,
+		Payload: in.KeyInfo.WrappedKey,
 	}
 
 	// Decrypt the wrapped key with DuoKey
@@ -270,7 +270,7 @@ func (k *Wrapper) Decrypt(_ context.Context, in *wrapping.EncryptedBlobInfo, aad
 
 	// Decrypt the envelope
 	envInfo := &wrapping.EnvelopeInfo{
-		Key:        output.Plaintext,
+		Key:        output.Result.Payload,
 		IV:         in.IV,
 		Ciphertext: in.Ciphertext,
 	}
