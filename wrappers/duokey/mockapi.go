@@ -16,7 +16,7 @@ func (k *mockKMS) Encrypt(input *kms.EncryptInput) (*kms.EncryptOutput, error) {
 	r.Result.KeyID = input.KeyID
 	r.Result.Payload = b64encoded
 
-	return r
+	return r, nil
 }
 
 // Decrypt returns a decoded base64 string
@@ -36,7 +36,7 @@ func (k *mockKMS) Decrypt(input *kms.DecryptInput) (*kms.DecryptOutput, error) {
 
 	r := &kms.DecryptOutput{}
 	r.Result.KeyID = input.KeyID
-	r.Result.Payload = b64encoded
+	r.Result.Payload = b64decoded
 
-	return r
+	return r, nil
 }
