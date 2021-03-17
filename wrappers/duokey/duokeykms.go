@@ -171,8 +171,8 @@ func (k *Wrapper) SetConfig(config map[string]string) (map[string]string, error)
 	switch {
 	case os.Getenv("DUOKEY_ENCRYPT_ROUTE") != "":
 		k.kmsEncrypt = os.Getenv("DUOKEY_ENCRYPT_ROUTE")
-	case config["encryptroute"] != "":
-		k.kmsEncrypt = config["encryptroute"]
+	case config["encrypt_route"] != "":
+		k.kmsEncrypt = config["encrypt_route"]
 	default:
 		return nil, errors.New("route for encryption is required")
 	}
@@ -181,8 +181,8 @@ func (k *Wrapper) SetConfig(config map[string]string) (map[string]string, error)
 	switch {
 	case os.Getenv("DUOKEY_DECRYPT_ROUTE") != "":
 		k.kmsDecrypt = os.Getenv("DUOKEY_DECRYPT_ROUTE")
-	case config["decryptroute"] != "":
-		k.kmsDecrypt = config["decryptroute"]
+	case config["decrypt_route"] != "":
+		k.kmsDecrypt = config["decrypt_route"]
 	default:
 		return nil, errors.New("route for decryption is required")
 	}
@@ -207,7 +207,7 @@ func (k *Wrapper) SetConfig(config map[string]string) (map[string]string, error)
 // Encrypt is used to encrypt the master key using the the DuoKey service.
 // This returns the ciphertext, and/or any errors from this
 // call. This should be called after the KMS client has been instantiated.
-func (k *Wrapper) Encrypt(_ context.Context, plaintext, aad []byte) (blob *wrapping.EncryptedBlobInfo, err error) {
+func (k *Wrapper) Encrypt(ctx context.Context, plaintext, aad []byte) (blob *wrapping.EncryptedBlobInfo, err error) {
 
 	if plaintext == nil {
 		return nil, fmt.Errorf("plaintext for encryption is nil")
@@ -224,7 +224,7 @@ func (k *Wrapper) Encrypt(_ context.Context, plaintext, aad []byte) (blob *wrapp
 		Payload: env.Key,
 	}
 
-	output, err := k.client.Encrypt(input)
+	output, err := k.client.EncryptWithContext(ctx, input)
 	if err != nil {
 		return nil, fmt.Errorf("error encrypting data: %w", err)
 	}
@@ -246,7 +246,7 @@ func (k *Wrapper) Encrypt(_ context.Context, plaintext, aad []byte) (blob *wrapp
 }
 
 // Decrypt is used to decrypt the ciphertext. This should be called after Init.
-func (k *Wrapper) Decrypt(_ context.Context, in *wrapping.EncryptedBlobInfo, aad []byte) (pt []byte, err error) {
+func (k *Wrapper) Decrypt(ctx context.Context, in *wrapping.EncryptedBlobInfo, aad []byte) (pt []byte, err error) {
 
 	if in == nil {
 		return nil, fmt.Errorf("input for decryption is nil")
@@ -263,7 +263,7 @@ func (k *Wrapper) Decrypt(_ context.Context, in *wrapping.EncryptedBlobInfo, aad
 	}
 
 	// Decrypt the wrapped key with DuoKey
-	output, err := k.client.Decrypt(input)
+	output, err := k.client.DecryptWithContext(ctx, input)
 	if err != nil {
 		return nil, fmt.Errorf("error decrypting key: %w", err)
 	}
@@ -324,8 +324,8 @@ func (k *Wrapper) getDuoKeyClient() (*kms.KMS, error) {
 
 	routes := restapi.Config{}
 	routes.BasePath = k.basePath
-	routes.KMSEncrypt = k.kmsEncrypt
-	routes.KMSDecrypt = k.kmsDecrypt
+	routes.KMSEncryptRoute = k.kmsEncrypt
+	routes.KMSDecryptRoute = k.kmsDecrypt
 
 	client, err := kms.New(credentials, routes)
 	if err != nil {

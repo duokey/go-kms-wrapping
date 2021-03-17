@@ -25,8 +25,8 @@ func TestSetConfig(t *testing.T) {
 				"password":      "s3crEt",
 				"scope":         "vault-api",
 				"basepath":      "https://www.duokey.ch",
-				"encryptroute":  "vault/v1/encrypt",
-				"decryptroute":  "vault/v1/decrypt"},
+				"encrypt_route": "vault/v1/encrypt",
+				"decrypt_route": "vault/v1/decrypt"},
 			wantErr: false,
 		},
 		{
@@ -40,23 +40,23 @@ func TestSetConfig(t *testing.T) {
 				"password":      "s3crEt",
 				"scope":         "vault-api",
 				"basepath":      "https://www.duokey.ch",
-				"encryptroute":  "vault/v1/encrypt",
-				"decryptroute":  "vault/v1/decrypt"},
+				"encrypt_route": "vault/v1/encrypt",
+				"decrypt_route": "vault/v1/decrypt"},
 			wantErr: true,
 		},
 		{
 			name: "no client secret",
 			config: map[string]string{"issuer": "https://www.duokey.ch",
-				"client_id":    "dke.cockpit",
-				"vault_id":     "HSM",
-				"key_id":       "efbfff7c-fa48-4aba-bf48-6d3d832df292",
-				"tenant_id":    "42",
-				"username":     "jane.doe",
-				"password":     "s3crEt",
-				"scope":        "vault-api",
-				"basepath":     "https://www.duokey.ch",
-				"encryptroute": "vault/v1/encrypt",
-				"decryptroute": "vault/v1/decrypt"},
+				"client_id":     "dke.cockpit",
+				"vault_id":      "HSM",
+				"key_id":        "efbfff7c-fa48-4aba-bf48-6d3d832df292",
+				"tenant_id":     "42",
+				"username":      "jane.doe",
+				"password":      "s3crEt",
+				"scope":         "vault-api",
+				"basepath":      "https://www.duokey.ch",
+				"encrypt_route": "vault/v1/encrypt",
+				"decrypt_route": "vault/v1/decrypt"},
 			wantErr: true,
 		},
 		{
@@ -70,8 +70,8 @@ func TestSetConfig(t *testing.T) {
 				"password":      "s3crEt",
 				"scope":         "vault-api",
 				"basepath":      "https://www.duokey.ch",
-				"encryptroute":  "vault/v1/encrypt",
-				"decryptroute":  "vault/v1/decrypt"},
+				"encrypt_route": "vault/v1/encrypt",
+				"decrypt_route": "vault/v1/decrypt"},
 			wantErr: true,
 		},
 		{
@@ -85,8 +85,8 @@ func TestSetConfig(t *testing.T) {
 				"password":      "s3crEt",
 				"scope":         "vault-api",
 				"basepath":      "https://www.duokey.ch",
-				"encryptroute":  "vault/v1/encrypt",
-				"decryptroute":  "vault/v1/decrypt"},
+				"encrypt_route": "vault/v1/encrypt",
+				"decrypt_route": "vault/v1/decrypt"},
 			wantErr: true,
 		},
 		{
@@ -100,8 +100,8 @@ func TestSetConfig(t *testing.T) {
 				"password":      "s3crEt",
 				"scope":         "vault-api",
 				"basepath":      "https://www.duokey.ch",
-				"encryptroute":  "vault/v1/encrypt",
-				"decryptroute":  "vault/v1/decrypt"},
+				"encrypt_route": "vault/v1/encrypt",
+				"decrypt_route": "vault/v1/decrypt"},
 			wantErr: true,
 		},
 		{
@@ -116,8 +116,8 @@ func TestSetConfig(t *testing.T) {
 				"password":      "s3crEt",
 				"scope":         "vault-api",
 				"basepath":      "https://www.duokey.ch",
-				"encryptroute":  "vault/v1/encrypt",
-				"decryptroute":  "vault/v1/decrypt"},
+				"encrypt_route": "vault/v1/encrypt",
+				"decrypt_route": "vault/v1/decrypt"},
 			wantErr: true,
 		},
 		{
@@ -132,8 +132,8 @@ func TestSetConfig(t *testing.T) {
 				"password":      "s3crEt",
 				"scope":         "vault-api",
 				"basepath":      "https://www.duokey.ch",
-				"encryptroute":  "vault/v1/encrypt",
-				"decryptroute":  "vault/v1/decrypt"},
+				"encrypt_route": "vault/v1/encrypt",
+				"decrypt_route": "vault/v1/decrypt"},
 			wantErr: true,
 		},
 		{
@@ -147,8 +147,8 @@ func TestSetConfig(t *testing.T) {
 				"password":      "s3crEt",
 				"scope":         "vault-api",
 				"basepath":      "https://www.duokey.ch",
-				"encryptroute":  "vault/v1/encrypt",
-				"decryptroute":  "vault/v1/decrypt"},
+				"encrypt_route": "vault/v1/encrypt",
+				"decrypt_route": "vault/v1/decrypt"},
 			wantErr: true,
 		},
 		{
@@ -162,8 +162,8 @@ func TestSetConfig(t *testing.T) {
 				"username":      "jane.doe",
 				"scope":         "vault-api",
 				"basepath":      "https://www.duokey.ch",
-				"encryptroute":  "vault/v1/encrypt",
-				"decryptroute":  "vault/v1/decrypt"},
+				"encrypt_route": "vault/v1/encrypt",
+				"decrypt_route": "vault/v1/decrypt"},
 			wantErr: true,
 		},
 		{
@@ -177,8 +177,8 @@ func TestSetConfig(t *testing.T) {
 				"username":      "jane.doe",
 				"password":      "s3crEt",
 				"basepath":      "https://www.duokey.ch",
-				"encryptroute":  "vault/v1/encrypt",
-				"decryptroute":  "vault/v1/decrypt"},
+				"encrypt_route": "vault/v1/encrypt",
+				"decrypt_route": "vault/v1/decrypt"},
 			wantErr: true,
 		},
 		{
@@ -192,8 +192,8 @@ func TestSetConfig(t *testing.T) {
 				"username":      "jane.doe",
 				"password":      "s3crEt",
 				"scope":         "vault-api",
-				"encryptroute":  "vault/v1/encrypt",
-				"decryptroute":  "vault/v1/decrypt"},
+				"encrypt_route": "vault/v1/encrypt",
+				"decrypt_route": "vault/v1/decrypt"},
 			wantErr: true,
 		},
 		{
@@ -208,7 +208,7 @@ func TestSetConfig(t *testing.T) {
 				"password":      "s3crEt",
 				"scope":         "vault-api",
 				"basepath":      "https://www.duokey.ch",
-				"decryptroute":  "vault/v1/decrypt"},
+				"decrypt_route": "vault/v1/decrypt"},
 			wantErr: true,
 		},
 		{
@@ -223,7 +223,7 @@ func TestSetConfig(t *testing.T) {
 				"password":      "s3crEt",
 				"scope":         "vault-api",
 				"basepath":      "https://www.duokey.ch",
-				"encryptroute":  "vault/v1/encrypt"},
+				"encrypt_route": "vault/v1/encrypt"},
 			wantErr: true,
 		},
 	}
@@ -257,7 +257,7 @@ func TestEncryptDecrypt(t *testing.T) {
 	// Random plaintext
 	plaintext := make([]byte, 64)
 	_, err = rand.Read(plaintext)
-    if err != nil {
+	if err != nil {
 		t.Fail()
 	}
 
@@ -268,7 +268,7 @@ func TestEncryptDecrypt(t *testing.T) {
 		t.Fail()
 	}
 
-	// Generate an encryption key K, encrypt plaintext with K, and wrap K with our 
+	// Generate an encryption key K, encrypt plaintext with K, and wrap K with our
 	// mock service
 	blob, err := w.Encrypt(nil, plaintext, aad)
 	if err != nil {
