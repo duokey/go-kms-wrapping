@@ -9,7 +9,6 @@ import (
 	"sync/atomic"
 
 	"github.com/duokey/duokey-sdk-go/duokey/credentials"
-	"github.com/duokey/duokey-sdk-go/duokey/restapi"
 	"github.com/duokey/duokey-sdk-go/service/kms"
 	"github.com/duokey/duokey-sdk-go/service/kms/kmsiface"
 	wrapping "github.com/hashicorp/go-kms-wrapping"
@@ -322,12 +321,12 @@ func (k *Wrapper) getDuoKeyClient() (*kms.KMS, error) {
 	credentials.Scope = k.scope
 	credentials.TenantID = k.tenandID
 
-	routes := restapi.Config{}
-	routes.BasePath = k.basePath
-	routes.KMSEncryptRoute = k.kmsEncrypt
-	routes.KMSDecryptRoute = k.kmsDecrypt
+	endpoints := kms.Endpoints{}
+	endpoints.BasePath = k.basePath
+	endpoints.EncryptRoute = k.kmsEncrypt
+	endpoints.DecryptRoute = k.kmsDecrypt
 
-	client, err := kms.New(credentials, routes)
+	client, err := kms.New(credentials, endpoints)
 	if err != nil {
 		return nil, fmt.Errorf("error initializing DuoKey client: %w", err)
 	}
