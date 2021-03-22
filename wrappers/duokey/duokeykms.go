@@ -27,7 +27,7 @@ type Wrapper struct {
 	tenandID     uint32
 
 	// Routes
-	basePath   string
+	baseURL    string
 	kmsEncrypt string
 	kmsDecrypt string
 
@@ -158,10 +158,10 @@ func (k *Wrapper) SetConfig(config map[string]string) (map[string]string, error)
 
 	// Check and set the base path
 	switch {
-	case os.Getenv("DUOKEY_BASE_PATH") != "":
-		k.basePath = os.Getenv("DUOKEY_BASE_PATH")
-	case config["basepath"] != "":
-		k.basePath = config["basepath"]
+	case os.Getenv("DUOKEY_BASE_URL") != "":
+		k.baseURL = os.Getenv("DUOKEY_BASE_URL")
+	case config["baseURL"] != "":
+		k.baseURL = config["baseURL"]
 	default:
 		return nil, errors.New("base path is required")
 	}
@@ -321,7 +321,7 @@ func (k *Wrapper) getDuoKeyClient() (*kms.KMS, error) {
 	credentials.TenantID = k.tenandID
 
 	endpoints := kms.Endpoints{}
-	endpoints.BaseURL = k.basePath
+	endpoints.BaseURL = k.baseURL
 	endpoints.EncryptRoute = k.kmsEncrypt
 	endpoints.DecryptRoute = k.kmsDecrypt
 
