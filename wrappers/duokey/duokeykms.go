@@ -156,12 +156,12 @@ func (k *Wrapper) SetConfig(config map[string]string) (map[string]string, error)
 		return nil, errors.New("scope is required")
 	}
 
-	// Check and set the base path
+	// Check and set the base URL
 	switch {
 	case os.Getenv("DUOKEY_BASE_URL") != "":
 		k.baseURL = os.Getenv("DUOKEY_BASE_URL")
-	case config["baseURL"] != "":
-		k.baseURL = config["baseURL"]
+	case config["base_url"] != "":
+		k.baseURL = config["base_url"]
 	default:
 		return nil, errors.New("base path is required")
 	}
