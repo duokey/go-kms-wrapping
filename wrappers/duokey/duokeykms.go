@@ -315,7 +315,6 @@ func (k *Wrapper) getDuoKeyClient() (*kms.KMS, error) {
 	credentials.Issuer = k.issuer
 	credentials.ClientID = k.clientID
 	credentials.ClientSecret = k.clientSecret
-	credentials.VaultID = k.vaultID
 	credentials.UserName = k.ussername
 	credentials.Password = k.password
 	credentials.Scope = k.scope
