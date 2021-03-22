@@ -218,7 +218,7 @@ func (k *Wrapper) Encrypt(ctx context.Context, plaintext, aad []byte) (blob *wra
 	}
 
 	input := &kms.EncryptInput{
-		KeyID: k.keyID,
+		KeyID:   k.keyID,
 		VaultID: k.vaultID,
 		Payload: env.Key,
 	}
@@ -256,7 +256,7 @@ func (k *Wrapper) Decrypt(ctx context.Context, in *wrapping.EncryptedBlobInfo, a
 	}
 
 	input := &kms.DecryptInput{
-		KeyID: in.KeyInfo.KeyID,
+		KeyID:   in.KeyInfo.KeyID,
 		VaultID: k.vaultID,
 		Payload: in.KeyInfo.WrappedKey,
 	}
@@ -321,7 +321,7 @@ func (k *Wrapper) getDuoKeyClient() (*kms.KMS, error) {
 	credentials.TenantID = k.tenandID
 
 	endpoints := kms.Endpoints{}
-	endpoints.BasePath = k.basePath
+	endpoints.BaseURL = k.basePath
 	endpoints.EncryptRoute = k.kmsEncrypt
 	endpoints.DecryptRoute = k.kmsDecrypt
 
