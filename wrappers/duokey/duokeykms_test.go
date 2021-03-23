@@ -12,7 +12,7 @@ import (
 
 // This test executes real calls.
 //
-// To run this test, the following env variables need to be set:
+// To run this test, the following environmental variables need to be set:
 //   - DUOKEY_ISSUER
 //   - DUOKEY_CLIENT_ID
 //   - DUOKEY_CLIENT_SECRET
@@ -31,7 +31,7 @@ func TestDuoKeyWrapper(t *testing.T) {
 	config := map[string]string{}
 	w := NewWrapper(nil)
 	if _, err := w.SetConfig(config); err != nil {
-		t.Errorf("failed to create a new DuoKey wrapper: %s", err.Error())
+		t.Errorf("failed to create a new DuoKey wrapper: %w", err)
 	}
 
 	// Random plaintext
@@ -49,7 +49,7 @@ func TestDuoKeyWrapper(t *testing.T) {
 	// Generate an encryption key K, encrypt plaintext with K, and wrap K with DuoKey
 	blob, err := w.Encrypt(context.Background(), plaintext, aad)
 	if err != nil {
-		t.Errorf("failed to encrypt the payload: %s", err.Error())
+		t.Errorf("failed to encrypt the payload: %w", err)
 	}
 
 	// Does the encrypted blob contain the key ID?
@@ -67,9 +67,9 @@ func TestDuoKeyWrapper(t *testing.T) {
 	assert.Equal(t, plaintext, pt)
 }
 
-// This test executes real calls.
+// This test executes real calls. The timeout is too short and an error is expected.
 //
-// To run this test, the following env variables need to be set:
+// To run this test, the following environmental variables need to be set:
 //   - DUOKEY_ISSUER
 //   - DUOKEY_CLIENT_ID
 //   - DUOKEY_CLIENT_SECRET
@@ -83,10 +83,6 @@ func TestDuoKeyWrapper(t *testing.T) {
 //   - DUOKEY_ENCRYPT_ROUTE
 //   - DUOKEY_DECRYPT_ROUTE
 func TestDuoKeyWrapperWithTimeout(t *testing.T) {
-
-	// 
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Millisecond)
-	defer cancel()
 
 	// Get wrapper configuration from environment variables
 	config := map[string]string{}
@@ -107,6 +103,10 @@ func TestDuoKeyWrapperWithTimeout(t *testing.T) {
 		t.Fail()
 	}
 
+	// Context with a very short timeout
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Millisecond)
+	defer cancel()
+
 	// Generate an encryption key K, encrypt plaintext with K, and wrap K with DuoKey
 	_, err := w.Encrypt(ctx, plaintext, aad)
 	if err == nil {
@@ -117,6 +117,7 @@ func TestDuoKeyWrapperWithTimeout(t *testing.T) {
 	assert.Contains(t, msg, "context deadline exceeded", "a timeout was expected")
 }
 
+// Checks that an error is triggered if a parameter is missing in the DuoKey configuration (provided as a map)
 func TestSetConfigEnvVariable(t *testing.T) {
 	testCases := []struct {
 		name    string
@@ -366,6 +367,7 @@ func TestSetConfigEnvVariable(t *testing.T) {
 	}
 }
 
+// Checks that an error is triggered if a parameter is missing in the DuoKey configuration (provided as environmental variables)
 func TestSetConfig(t *testing.T) {
 
 	testCases := []struct {
@@ -663,7 +665,7 @@ func TestEncryptDecrypt(t *testing.T) {
 	// mock service
 	blob, err := w.Encrypt(context.Background(), plaintext, aad)
 	if err != nil {
-		t.Errorf("failed to encrypt the payload: %s", err.Error())
+		t.Errorf("failed to encrypt the payload: %w", err)
 	}
 
 	// Does the encrypted blob contain the key ID?
@@ -674,7 +676,7 @@ func TestEncryptDecrypt(t *testing.T) {
 	// Unwrap K with our mock service and decrypt the ciphertext
 	pt, err := w.Decrypt(context.Background(), blob, aad)
 	if err != nil {
-		t.Errorf("failed to decrypt the payload: %s", err.Error())
+		t.Errorf("failed to decrypt the payload: %w", err)
 	}
 
 	// We should obtain our original plaintext
