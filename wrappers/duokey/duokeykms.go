@@ -228,6 +228,13 @@ func (k *Wrapper) Encrypt(ctx context.Context, plaintext, aad []byte) (blob *wra
 		return nil, fmt.Errorf("error encrypting data: %w", err)
 	}
 
+	if output.Success != true {
+		if output.Error != nil {
+			return nil, fmt.Errorf("server failed to encrypt payload: %s", *output.Error)
+		} 
+		return nil, fmt.Errorf("server failed to encrypt payload")
+	}
+
 	// Store the current key ID
 	keyID := output.Result.KeyID
 	k.currentKeyID.Store(keyID)
@@ -265,6 +272,13 @@ func (k *Wrapper) Decrypt(ctx context.Context, in *wrapping.EncryptedBlobInfo, a
 	output, err := k.client.DecryptWithContext(ctx, input)
 	if err != nil {
 		return nil, fmt.Errorf("error decrypting key: %w", err)
+	}
+
+	if output.Success != true {
+		if output.Error != nil {
+			return nil, fmt.Errorf("server failed to decrypt payload: %s", *output.Error)
+		} 
+		return nil, fmt.Errorf("server failed to decrypt payload")
 	}
 
 	// Decrypt the envelope
