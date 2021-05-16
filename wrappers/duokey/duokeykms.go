@@ -16,15 +16,16 @@ import (
 
 // Wrapper is a Wrapper that uses DuoKey KMS
 type Wrapper struct {
-	issuer       string
-	clientID     string
-	clientSecret string
-	vaultID      string
-	keyID        string
-	ussername    string
-	password     string
-	scope        string
-	tenandID     uint32
+	issuer         string
+	clientID       string
+	clientSecret   string
+	vaultID        string
+	keyID          string
+	ussername      string
+	password       string
+	scope          string
+	headerTenantID string
+	tenandID       uint32
 
 	// Routes
 	baseURL    string
@@ -96,6 +97,15 @@ func (k *Wrapper) SetConfig(config map[string]string) (map[string]string, error)
 		k.vaultID = config["vault_id"]
 	default:
 		return nil, errors.New("vault ID is required")
+	}
+
+	switch {
+	case os.Getenv("DUOKEY_HEADER_TENANT_ID") != "":
+		k.headerTenantID = os.Getenv("DUOKEY_HEADER_TENANT_ID")
+	case config["header_tenant_id"] != "":
+		k.headerTenantID = config["header_tenant_id"]
+	default:
+		return nil, errors.New("Header tenant ID is required")
 	}
 
 	// Check and set the key ID
@@ -231,7 +241,7 @@ func (k *Wrapper) Encrypt(ctx context.Context, plaintext, aad []byte) (blob *wra
 	if output.Success != true {
 		if output.Error != nil {
 			return nil, fmt.Errorf("server failed to encrypt payload: %s", *output.Error)
-		} 
+		}
 		return nil, fmt.Errorf("server failed to encrypt payload")
 	}
 
@@ -277,7 +287,7 @@ func (k *Wrapper) Decrypt(ctx context.Context, in *wrapping.EncryptedBlobInfo, a
 	if output.Success != true {
 		if output.Error != nil {
 			return nil, fmt.Errorf("server failed to decrypt payload: %s", *output.Error)
-		} 
+		}
 		return nil, fmt.Errorf("server failed to decrypt payload")
 	}
 
@@ -332,6 +342,7 @@ func (k *Wrapper) getDuoKeyClient() (*kms.KMS, error) {
 	credentials.UserName = k.ussername
 	credentials.Password = k.password
 	credentials.Scope = k.scope
+	credentials.HeaderTenantID = k.headerTenantID
 	credentials.TenantID = k.tenandID
 
 	endpoints := kms.Endpoints{}
@@ -339,7 +350,7 @@ func (k *Wrapper) getDuoKeyClient() (*kms.KMS, error) {
 	endpoints.EncryptRoute = k.kmsEncrypt
 	endpoints.DecryptRoute = k.kmsDecrypt
 
-	client, err := kms.New(credentials, endpoints)
+	client, err := kms.New(credentials, endpoints, nil)
 	if err != nil {
 		return nil, fmt.Errorf("error initializing DuoKey client: %w", err)
 	}
