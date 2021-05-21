@@ -4,15 +4,42 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log"
 	"os"
 	"strconv"
 	"sync/atomic"
 
+	"github.com/duokey/duokey-sdk-go/duokey"
 	"github.com/duokey/duokey-sdk-go/duokey/credentials"
 	"github.com/duokey/duokey-sdk-go/service/kms"
 	"github.com/duokey/duokey-sdk-go/service/kms/kmsiface"
+	"github.com/hashicorp/go-hclog"
 	wrapping "github.com/hashicorp/go-kms-wrapping"
 )
+
+// Wrap HashiCorp logger (go-hclog does not implement our Logger interface)
+type dkLogger struct {
+	logger *log.Logger
+}
+
+func (dl *dkLogger) Info(args ...interface{}) {
+	dl.logger.Output(2, fmt.Sprint(args...))
+}
+
+func (dl *dkLogger) Infof(format string, args ...interface{}) {
+	dl.logger.Output(2, fmt.Sprintf(format, args...))
+}
+
+func newDKLogger(logger hclog.Logger) *dkLogger {
+	options := hclog.StandardLoggerOptions{
+		InferLevels: false,
+		ForceLevel:  hclog.Info,
+	}
+	return &dkLogger{logger: logger.StandardLogger(&options)}
+}
+
+// Ensure that dkLogger implements the duokey.Logger interface
+var _ duokey.Logger = (*dkLogger)(nil)
 
 // Wrapper is a Wrapper that uses DuoKey KMS
 type Wrapper struct {
@@ -32,6 +59,9 @@ type Wrapper struct {
 	kmsEncrypt string
 	kmsDecrypt string
 
+	// Logger
+	logger hclog.Logger
+
 	client kmsiface.KMSAPI
 
 	currentKeyID *atomic.Value
@@ -44,8 +74,13 @@ var _ wrapping.Wrapper = (*Wrapper)(nil)
 func NewWrapper(opts *wrapping.WrapperOptions) *Wrapper {
 	if opts == nil {
 		opts = new(wrapping.WrapperOptions)
+		opts.Logger = hclog.New(&hclog.LoggerOptions{
+			Name:  "DuoKey wrapper",
+			Level: hclog.LevelFromString("INFO"),
+		})
 	}
 	k := &Wrapper{
+		logger:       opts.Logger,
 		currentKeyID: new(atomic.Value),
 	}
 	k.currentKeyID.Store("")
@@ -105,7 +140,7 @@ func (k *Wrapper) SetConfig(config map[string]string) (map[string]string, error)
 	case config["header_tenant_id"] != "":
 		k.headerTenantID = config["header_tenant_id"]
 	default:
-		return nil, errors.New("Header tenant ID is required")
+		return nil, errors.New("header tenant ID is required")
 	}
 
 	// Check and set the key ID
@@ -234,11 +269,12 @@ func (k *Wrapper) Encrypt(ctx context.Context, plaintext, aad []byte) (blob *wra
 	}
 
 	output, err := k.client.EncryptWithContext(ctx, input)
+	//output, err := k.client.Encrypt(input)
 	if err != nil {
 		return nil, fmt.Errorf("error encrypting data: %w", err)
 	}
 
-	if output.Success != true {
+	if !output.Success {
 		if output.Error != nil {
 			return nil, fmt.Errorf("server failed to encrypt payload: %s", *output.Error)
 		}
@@ -284,7 +320,7 @@ func (k *Wrapper) Decrypt(ctx context.Context, in *wrapping.EncryptedBlobInfo, a
 		return nil, fmt.Errorf("error decrypting key: %w", err)
 	}
 
-	if output.Success != true {
+	if !output.Success {
 		if output.Error != nil {
 			return nil, fmt.Errorf("server failed to decrypt payload: %s", *output.Error)
 		}
@@ -350,7 +386,7 @@ func (k *Wrapper) getDuoKeyClient() (*kms.KMS, error) {
 	endpoints.EncryptRoute = k.kmsEncrypt
 	endpoints.DecryptRoute = k.kmsDecrypt
 
-	client, err := kms.New(credentials, endpoints, nil)
+	client, err := kms.NewClientWithLogger(credentials, endpoints, newDKLogger(k.logger))
 	if err != nil {
 		return nil, fmt.Errorf("error initializing DuoKey client: %w", err)
 	}

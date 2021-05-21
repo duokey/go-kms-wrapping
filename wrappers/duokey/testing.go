@@ -27,6 +27,7 @@ func (k *mockKMS) Encrypt(input *kms.EncryptInput) (*kms.EncryptOutput, error) {
 	base64.StdEncoding.Encode(b64encoded, input.Payload)
 
 	r := &kms.EncryptOutput{}
+	r.Success = true
 	r.Result.KeyID = input.KeyID
 	r.Result.Payload = b64encoded
 
@@ -36,7 +37,7 @@ func (k *mockKMS) Encrypt(input *kms.EncryptInput) (*kms.EncryptOutput, error) {
 // EncryptWithContext is the same operation as Encrypt. It is however possible
 // to pass a non-nil context.
 func (k *mockKMS) EncryptWithContext(_ context.Context, input *kms.EncryptInput) (*kms.EncryptOutput, error) {
-	return k.Encrypt(input);
+	return k.Encrypt(input)
 }
 
 // Decrypt returns a decoded base64 string
@@ -55,6 +56,7 @@ func (k *mockKMS) Decrypt(input *kms.DecryptInput) (*kms.DecryptOutput, error) {
 	}
 
 	r := &kms.DecryptOutput{}
+	r.Success = true
 	r.Result.KeyID = input.KeyID
 	r.Result.Payload = b64decoded
 
