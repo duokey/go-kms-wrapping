@@ -385,14 +385,9 @@ func TestSetConfigEnvVariable(t *testing.T) {
 			// Set all environment variables
 			for key, value := range testCase.config {
 				os.Setenv(key, value)
+				// Unset environment variables before exiting
+				defer os.Unsetenv(key)
 			}
-
-			// Unset environment variables before exiting
-			defer func() {
-				for key := range testCase.config {
-					os.Unsetenv(key)
-				}
-			}()
 
 			config := map[string]string{}
 			_, err := w.SetConfig(config)
