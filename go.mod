@@ -14,7 +14,7 @@ require (
 	github.com/duokey/duokey-sdk-go v0.0.9
 	github.com/golang/protobuf v1.4.2
 	github.com/hashicorp/go-cleanhttp v0.5.1
-	github.com/hashicorp/go-hclog v0.14.1
+	github.com/hashicorp/go-hclog v0.16.1
 	github.com/hashicorp/go-uuid v1.0.2
 	github.com/hashicorp/vault/api v1.0.5-0.20200805123347-1ef507638af6
 	github.com/hashicorp/vault/sdk v0.1.14-0.20200916184745-5576096032f8

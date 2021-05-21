@@ -75,7 +75,9 @@ func NewWrapper(opts *wrapping.WrapperOptions) *Wrapper {
 	if opts == nil {
 		opts = new(wrapping.WrapperOptions)
 		opts.Logger = hclog.New(&hclog.LoggerOptions{
-			Name:  "DuoKey wrapper",
+			Name:  "DuoKey SDK",
+			JSONFormat: true,
+			IncludeLocation: true,
 			Level: hclog.LevelFromString("INFO"),
 		})
 	}
