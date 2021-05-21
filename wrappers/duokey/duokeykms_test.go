@@ -3,7 +3,6 @@ package duokeykms
 import (
 	"context"
 	"crypto/rand"
-	"fmt"
 	"os"
 	"testing"
 	"time"
@@ -30,40 +29,45 @@ import (
 func TestDuoKeyWrapper(t *testing.T) {
 
 	// Get wrapper configuration from environment variables
-	config := map[string]string{}
+	//config := map[string]string{}
 	w := NewWrapper(nil)
-	if _, err := w.SetConfig(config); err != nil {
-		t.Errorf("failed to create a new DuoKey wrapper: %v", err)
+	if _, err := w.SetConfig(nil); err != nil {
+		t.Logf("failed to create a new DuoKey wrapper: %v", err)
+		t.FailNow()
 	}
 
 	// Random plaintext
 	plaintext := make([]byte, 512)
 	if _, err := rand.Read(plaintext); err != nil {
-		t.Fail()
+		t.Logf("failed to generate a random plaintext: %v", err)
+		t.FailNow()
 	}
 
 	// Random tag for authenticated encryption
 	aad := make([]byte, 16)
 	if _, err := rand.Read(aad); err != nil {
-		t.Fail()
+		t.Logf("failed to generate a random tag for authenticated encryption: %v", err)
+		t.FailNow()
 	}
 
 	// Generate an encryption key K, encrypt plaintext with K, and wrap K with DuoKey
 	blob, err := w.Encrypt(context.Background(), plaintext, aad)
 	if err != nil {
-		fmt.Println("#############################")
-		t.Errorf("failed to encrypt the payload: %v", err)
+		t.Logf("failed to encrypt the payload: %v", err)
+		t.FailNow()
 	}
 
 	// Does the encrypted blob contain the key ID?
 	if blob.KeyInfo.KeyID != w.keyID {
-		t.Errorf("unexpected key id in the encrypted blob: %s", blob.KeyInfo.KeyID)
+		t.Logf("unexpected key id in the encrypted blob: %s", blob.KeyInfo.KeyID)
+		t.FailNow()
 	}
 
 	// Unwrap K with Duokey and decrypt the ciphertext
 	pt, err := w.Decrypt(context.Background(), blob, aad)
 	if err != nil {
-		t.Errorf("failed to decrypt the payload: %s", err.Error())
+		t.Logf("failed to decrypt the payload: %s", err.Error())
+		t.FailNow()
 	}
 
 	// We should obtain our original plaintext
@@ -92,19 +96,22 @@ func TestDuoKeyWrapperWithTimeout(t *testing.T) {
 	config := map[string]string{}
 	w := NewWrapper(nil)
 	if _, err := w.SetConfig(config); err != nil {
-		t.Errorf("failed to create a new DuoKey wrapper: %s", err.Error())
+		t.Logf("failed to create a new DuoKey wrapper: %s", err.Error())
+		t.FailNow()
 	}
 
 	// Random plaintext
 	plaintext := make([]byte, 512)
 	if _, err := rand.Read(plaintext); err != nil {
-		t.Fail()
+		t.Logf("failed to generate a random plaintext: %v", err)
+		t.FailNow()
 	}
 
 	// Random tag for authenticated encryption
 	aad := make([]byte, 16)
 	if _, err := rand.Read(aad); err != nil {
-		t.Fail()
+		t.Logf("failed to generate a random tag for authenticated encryption: %v", err)
+		t.FailNow()
 	}
 
 	// Context with a very short timeout
@@ -114,7 +121,8 @@ func TestDuoKeyWrapperWithTimeout(t *testing.T) {
 	// Generate an encryption key K, encrypt plaintext with K, and wrap K with DuoKey
 	_, err := w.Encrypt(ctx, plaintext, aad)
 	if err == nil {
-		t.Error("a timeout was expected")
+		t.Log("a timeout was expected")
+		t.FailNow()
 	}
 
 	msg := err.Error()
@@ -379,6 +387,13 @@ func TestSetConfigEnvVariable(t *testing.T) {
 				os.Setenv(key, value)
 			}
 
+			// Unset environment variables before exiting
+			defer func() {
+				for key := range testCase.config {
+					os.Unsetenv(key)
+				}
+			}()
+
 			config := map[string]string{}
 			_, err := w.SetConfig(config)
 			if err == nil {
@@ -391,11 +406,6 @@ func TestSetConfigEnvVariable(t *testing.T) {
 					// Our test shouldn't trigger an error
 					t.Errorf("unexpected error: %v", err)
 				}
-			}
-
-			// Unset environment variables befor
-			for key := range testCase.config {
-				os.Unsetenv(key)
 			}
 		})
 	}
@@ -717,32 +727,37 @@ func TestEncryptDecrypt(t *testing.T) {
 	plaintext := make([]byte, 64)
 	_, err = rand.Read(plaintext)
 	if err != nil {
-		t.Fail()
+		t.Logf("failed to generate a random plaintext: %v", err)
+		t.FailNow()
 	}
 
 	// Random tag for authenticated encryption
 	aad := make([]byte, 16)
 	_, err = rand.Read(aad)
 	if err != nil {
-		t.Fail()
+		t.Logf("failed to generate a random tag for authenticated encryption: %v", err)
+		t.FailNow()
 	}
 
 	// Generate an encryption key K, encrypt plaintext with K, and wrap K with our
 	// mock service
 	blob, err := w.Encrypt(context.Background(), plaintext, aad)
 	if err != nil {
-		t.Errorf("failed to encrypt the payload: %v", err)
+		t.Logf("failed to encrypt the payload: %v", err)
+		t.FailNow()
 	}
 
 	// Does the encrypted blob contain the key ID?
 	if blob.KeyInfo.KeyID != w.keyID {
-		t.Errorf("unexpected key id in the encrypted blob: %s", blob.KeyInfo.KeyID)
+		t.Logf("unexpected key id in the encrypted blob: %s", blob.KeyInfo.KeyID)
+		t.FailNow()
 	}
 
 	// Unwrap K with our mock service and decrypt the ciphertext
 	pt, err := w.Decrypt(context.Background(), blob, aad)
 	if err != nil {
-		t.Errorf("failed to decrypt the payload: %v", err)
+		t.Logf("failed to decrypt the payload: %v", err)
+		t.FailNow()
 	}
 
 	// We should obtain our original plaintext

@@ -253,6 +253,10 @@ func (k *Wrapper) SetConfig(config map[string]string) (map[string]string, error)
 // call. This should be called after the KMS client has been instantiated.
 func (k *Wrapper) Encrypt(ctx context.Context, plaintext, aad []byte) (blob *wrapping.EncryptedBlobInfo, err error) {
 
+	if k.client == nil {
+		return nil, fmt.Errorf("no DuoKey client")
+	}
+
 	if plaintext == nil {
 		return nil, fmt.Errorf("plaintext for encryption is nil")
 	}
@@ -269,7 +273,6 @@ func (k *Wrapper) Encrypt(ctx context.Context, plaintext, aad []byte) (blob *wra
 	}
 
 	output, err := k.client.EncryptWithContext(ctx, input)
-	//output, err := k.client.Encrypt(input)
 	if err != nil {
 		return nil, fmt.Errorf("error encrypting data: %w", err)
 	}
@@ -299,6 +302,10 @@ func (k *Wrapper) Encrypt(ctx context.Context, plaintext, aad []byte) (blob *wra
 
 // Decrypt is used to decrypt the ciphertext. This should be called after Init.
 func (k *Wrapper) Decrypt(ctx context.Context, in *wrapping.EncryptedBlobInfo, aad []byte) (pt []byte, err error) {
+
+	if k.client == nil {
+		return nil, fmt.Errorf("no DuoKey client")
+	}
 
 	if in == nil {
 		return nil, fmt.Errorf("input for decryption is nil")
