@@ -123,8 +123,8 @@ github.com/docker/distribution v2.7.1+incompatible/go.mod h1:J2gT2udsDAN96Uj4Kfc
 github.com/docker/docker v1.4.2-0.20200319182547-c7ad2b866182/go.mod h1:eEKB0N0r5NX/I1kEveEz05bcu8tLC/8azJZsviup8Sk=
 github.com/docker/go-connections v0.4.0/go.mod h1:Gbd7IOopHjR8Iph03tsViu4nIes5XhDvyHbTtUxmeec=
 github.com/docker/go-units v0.4.0/go.mod h1:fgPhTUdO+D/Jk86RDLlptpiXQzgHJF7gydDDbaIK4Dk=
-github.com/duokey/duokey-sdk-go v0.0.9 h1:mbMWfuImxBvDDShRgqEJdmgzL46+CW5k6zdfZ0L8UpM=
-github.com/duokey/duokey-sdk-go v0.0.9/go.mod h1:hq3E4icTXNVKAfqXvy877RV8defIdmFcD5lUrgrdiYg=
+github.com/duokey/duokey-sdk-go v0.1.0 h1:l7TufNeC1YZoJ3rTgP5mOzMNeMYbYt6OMTekxYc7ags=
+github.com/duokey/duokey-sdk-go v0.1.0/go.mod h1:hq3E4icTXNVKAfqXvy877RV8defIdmFcD5lUrgrdiYg=
 github.com/dustin/go-humanize v0.0.0-20171111073723-bb3d318650d4/go.mod h1:HtrtbFcZ19U5GC7JDqmcUSB87Iq5E25KnS6fMYU6eOk=
 github.com/envoyproxy/go-control-plane v0.9.0/go.mod h1:YTl/9mNaCwkRvm6d1a2C3ymFceY/DCBVvsKhRF0iEA4=
 github.com/envoyproxy/go-control-plane v0.9.1-0.20191026205805-5f8ba28d4473/go.mod h1:YTl/9mNaCwkRvm6d1a2C3ymFceY/DCBVvsKhRF0iEA4=

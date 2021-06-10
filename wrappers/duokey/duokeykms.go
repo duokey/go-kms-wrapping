@@ -43,6 +43,7 @@ var _ duokey.Logger = (*dkLogger)(nil)
 
 // Wrapper is a Wrapper that uses DuoKey KMS
 type Wrapper struct {
+	appID          string
 	issuer         string
 	clientID       string
 	clientSecret   string
@@ -75,10 +76,10 @@ func NewWrapper(opts *wrapping.WrapperOptions) *Wrapper {
 	if opts == nil {
 		opts = new(wrapping.WrapperOptions)
 		opts.Logger = hclog.New(&hclog.LoggerOptions{
-			Name:  "DuoKey SDK",
-			JSONFormat: true,
+			Name:            "DuoKey SDK",
+			JSONFormat:      true,
 			IncludeLocation: true,
-			Level: hclog.LevelFromString("INFO"),
+			Level:           hclog.LevelFromString("INFO"),
 		})
 	}
 	k := &Wrapper{
@@ -94,6 +95,16 @@ func NewWrapper(opts *wrapping.WrapperOptions) *Wrapper {
 func (k *Wrapper) SetConfig(config map[string]string) (map[string]string, error) {
 	if config == nil {
 		config = map[string]string{}
+	}
+
+	// Check and set the application ID
+	switch {
+	case os.Getenv("DUOKEY_APP_ID") != "":
+		k.appID = os.Getenv("DUOKEY_APP_ID")
+	case config["app_id"] != "":
+		k.appID = config["app_id"]
+	default:
+		return nil, errors.New("application ID is required")
 	}
 
 	// Check and set the issuer
@@ -381,6 +392,7 @@ func (k *Wrapper) HMACKeyID() string {
 func (k *Wrapper) getDuoKeyClient() (*kms.KMS, error) {
 
 	credentials := credentials.Config{}
+	credentials.AppID = k.appID
 	credentials.Issuer = k.issuer
 	credentials.ClientID = k.clientID
 	credentials.ClientSecret = k.clientSecret

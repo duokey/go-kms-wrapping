@@ -11,7 +11,7 @@ require (
 	github.com/Azure/go-autorest/autorest/validation v0.2.0 // indirect
 	github.com/aliyun/alibaba-cloud-sdk-go v0.0.0-20190620160927-9418d7b0cd0f
 	github.com/aws/aws-sdk-go v1.30.27
-	github.com/duokey/duokey-sdk-go v0.0.9
+	github.com/duokey/duokey-sdk-go v0.1.0
 	github.com/golang/protobuf v1.4.2
 	github.com/hashicorp/go-cleanhttp v0.5.1
 	github.com/hashicorp/go-hclog v0.16.1
