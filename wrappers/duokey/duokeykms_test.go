@@ -13,6 +13,7 @@ import (
 // This test executes real calls.
 //
 // To run this test, the following environmental variables need to be set:
+//   - DUOKEY_APP_ID
 //   - DUOKEY_ISSUER
 //   - DUOKEY_CLIENT_ID
 //   - DUOKEY_CLIENT_SECRET
@@ -77,6 +78,7 @@ func TestDuoKeyWrapper(t *testing.T) {
 // This test executes real calls. The timeout is too short and an error is expected.
 //
 // To run this test, the following environmental variables need to be set:
+//   - DUOKEY_APP_ID
 //   - DUOKEY_ISSUER
 //   - DUOKEY_CLIENT_ID
 //   - DUOKEY_CLIENT_SECRET
@@ -139,6 +141,7 @@ func TestSetConfigEnvVariable(t *testing.T) {
 		{
 			name: "expected configuration",
 			config: map[string]string{
+				"DUOKEY_APP_ID":           "vault",
 				"DUOKEY_ISSUER":           "https://www.duokey.ch",
 				"DUOKEY_CLIENT_ID":        "dke.cockpit",
 				"DUOKEY_CLIENT_SECRET":    "correcthorsebatterystaple", // See https://xkcd.com/936/
@@ -155,8 +158,27 @@ func TestSetConfigEnvVariable(t *testing.T) {
 			wantErr: false,
 		},
 		{
+			name: "no application ID",
+			config: map[string]string{
+				"DUOKEY_ISSUER":           "https://www.duokey.ch",
+				"DUOKEY_CLIENT_ID":        "dke.cockpit",
+				"DUOKEY_CLIENT_SECRET":    "correcthorsebatterystaple", // See https://xkcd.com/936/
+				"DUOKEY_VAULT_ID":         "HSM",
+				"DUOKEY_KEY_ID":           "efbfff7c-fa48-4aba-bf48-6d3d832df292",
+				"DUOKEY_HEADER_TENANT_ID": "X-DUOKEY-TENANTID",
+				"DUOKEY_TENANT_ID":        "42",
+				"DUOKEY_USERNAME":         "jane.doe",
+				"DUOKEY_PASSWORD":         "s3crEt",
+				"DUOKEY_SCOPE":            "vault-api",
+				"DUOKEY_BASE_URL":         "https://www.duokey.ch",
+				"DUOKEY_ENCRYPT_ROUTE":    "vault/v1/encrypt",
+				"DUOKEY_DECRYPT_ROUTE":    "vault/v1/decrypt"},
+			wantErr: true,
+		},
+		{
 			name: "no issuer",
 			config: map[string]string{
+				"DUOKEY_APP_ID":           "vault",
 				"DUOKEY_CLIENT_ID":        "dke.cockpit",
 				"DUOKEY_CLIENT_SECRET":    "correcthorsebatterystaple",
 				"DUOKEY_VAULT_ID":         "HSM",
@@ -174,6 +196,7 @@ func TestSetConfigEnvVariable(t *testing.T) {
 		{
 			name: "no client ID",
 			config: map[string]string{
+				"DUOKEY_APP_ID":           "vault",
 				"DUOKEY_ISSUER":           "https://www.duokey.ch",
 				"DUOKEY_CLIENT_SECRET":    "correcthorsebatterystaple",
 				"DUOKEY_VAULT_ID":         "HSM",
@@ -191,6 +214,7 @@ func TestSetConfigEnvVariable(t *testing.T) {
 		{
 			name: "no client secret",
 			config: map[string]string{
+				"DUOKEY_APP_ID":           "vault",
 				"DUOKEY_ISSUER":           "https://www.duokey.ch",
 				"DUOKEY_CLIENT_ID":        "dke.cockpit",
 				"DUOKEY_VAULT_ID":         "HSM",
@@ -208,6 +232,7 @@ func TestSetConfigEnvVariable(t *testing.T) {
 		{
 			name: "no vault ID",
 			config: map[string]string{
+				"DUOKEY_APP_ID":           "vault",
 				"DUOKEY_ISSUER":           "https://www.duokey.ch",
 				"DUOKEY_CLIENT_ID":        "dke.cockpit",
 				"DUOKEY_CLIENT_SECRET":    "correcthorsebatterystaple",
@@ -225,6 +250,7 @@ func TestSetConfigEnvVariable(t *testing.T) {
 		{
 			name: "no key ID",
 			config: map[string]string{
+				"DUOKEY_APP_ID":           "vault",
 				"DUOKEY_ISSUER":           "https://www.duokey.ch",
 				"DUOKEY_CLIENT_ID":        "dke.cockpit",
 				"DUOKEY_CLIENT_SECRET":    "correcthorsebatterystaple",
@@ -242,6 +268,7 @@ func TestSetConfigEnvVariable(t *testing.T) {
 		{
 			name: "no header tenant ID",
 			config: map[string]string{
+				"DUOKEY_APP_ID":        "vault",
 				"DUOKEY_ISSUER":        "https://www.duokey.ch",
 				"DUOKEY_CLIENT_ID":     "dke.cockpit",
 				"DUOKEY_CLIENT_SECRET": "correcthorsebatterystaple", // See https://xkcd.com/936/
@@ -259,6 +286,7 @@ func TestSetConfigEnvVariable(t *testing.T) {
 		{
 			name: "no tenant ID",
 			config: map[string]string{
+				"DUOKEY_APP_ID":           "vault",
 				"DUOKEY_ISSUER":           "https://www.duokey.ch",
 				"DUOKEY_CLIENT_ID":        "dke.cockpit",
 				"DUOKEY_CLIENT_SECRET":    "correcthorsebatterystaple",
@@ -276,6 +304,7 @@ func TestSetConfigEnvVariable(t *testing.T) {
 		{
 			name: "no username",
 			config: map[string]string{
+				"DUOKEY_APP_ID":           "vault",
 				"DUOKEY_ISSUER":           "https://www.duokey.ch",
 				"DUOKEY_CLIENT_ID":        "dke.cockpit",
 				"DUOKEY_CLIENT_SECRET":    "correcthorsebatterystaple",
@@ -293,6 +322,7 @@ func TestSetConfigEnvVariable(t *testing.T) {
 		{
 			name: "no password",
 			config: map[string]string{
+				"DUOKEY_APP_ID":           "vault",
 				"DUOKEY_ISSUER":           "https://www.duokey.ch",
 				"DUOKEY_CLIENT_ID":        "dke.cockpit",
 				"DUOKEY_CLIENT_SECRET":    "correcthorsebatterystaple",
@@ -310,6 +340,7 @@ func TestSetConfigEnvVariable(t *testing.T) {
 		{
 			name: "no scope",
 			config: map[string]string{
+				"DUOKEY_APP_ID":           "vault",
 				"DUOKEY_ISSUER":           "https://www.duokey.ch",
 				"DUOKEY_CLIENT_ID":        "dke.cockpit",
 				"DUOKEY_CLIENT_SECRET":    "correcthorsebatterystaple",
@@ -327,6 +358,7 @@ func TestSetConfigEnvVariable(t *testing.T) {
 		{
 			name: "no nase URL",
 			config: map[string]string{
+				"DUOKEY_APP_ID":           "vault",
 				"DUOKEY_ISSUER":           "https://www.duokey.ch",
 				"DUOKEY_CLIENT_ID":        "dke.cockpit",
 				"DUOKEY_CLIENT_SECRET":    "correcthorsebatterystaple",
@@ -344,6 +376,7 @@ func TestSetConfigEnvVariable(t *testing.T) {
 		{
 			name: "no route for encryption",
 			config: map[string]string{
+				"DUOKEY_APP_ID":           "vault",
 				"DUOKEY_ISSUER":           "https://www.duokey.ch",
 				"DUOKEY_CLIENT_ID":        "dke.cockpit",
 				"DUOKEY_CLIENT_SECRET":    "correcthorsebatterystaple",
@@ -361,6 +394,7 @@ func TestSetConfigEnvVariable(t *testing.T) {
 		{
 			name: "no route for decryption",
 			config: map[string]string{
+				"DUOKEY_APP_ID":           "vault",
 				"DUOKEY_ISSUER":           "https://www.duokey.ch",
 				"DUOKEY_CLIENT_ID":        "dke.cockpit",
 				"DUOKEY_CLIENT_SECRET":    "correcthorsebatterystaple",
@@ -417,6 +451,7 @@ func TestSetConfig(t *testing.T) {
 		{
 			name: "expected configuration",
 			config: map[string]string{
+				"app_id":           "vault",
 				"issuer":           "https://www.duokey.ch",
 				"client_id":        "dke.cockpit",
 				"client_secret":    "correcthorsebatterystaple", // See https://xkcd.com/936/
@@ -433,8 +468,27 @@ func TestSetConfig(t *testing.T) {
 			wantErr: false,
 		},
 		{
+			name: "no application ID",
+			config: map[string]string{
+				"issuer":           "https://www.duokey.ch",
+				"client_id":        "dke.cockpit",
+				"client_secret":    "correcthorsebatterystaple", // See https://xkcd.com/936/
+				"vault_id":         "HSM",
+				"key_id":           "efbfff7c-fa48-4aba-bf48-6d3d832df292",
+				"header_tenant_id": "X-DUOKEY-TENANTID",
+				"tenant_id":        "42",
+				"username":         "jane.doe",
+				"password":         "s3crEt",
+				"scope":            "vault-api",
+				"base_url":         "https://www.duokey.ch",
+				"encrypt_route":    "vault/v1/encrypt",
+				"decrypt_route":    "vault/v1/decrypt"},
+			wantErr: true,
+		},
+		{
 			name: "no issuer",
 			config: map[string]string{
+				"app_id":           "vault",
 				"client_id":        "dke.cockpit",
 				"client_secret":    "correcthorsebatterystaple",
 				"vault_id":         "HSM",
@@ -452,6 +506,7 @@ func TestSetConfig(t *testing.T) {
 		{
 			name: "no client ID",
 			config: map[string]string{
+				"app_id":           "vault",
 				"issuer":           "https://www.duokey.ch",
 				"client_secret":    "correcthorsebatterystaple",
 				"vault_id":         "HSM",
@@ -469,6 +524,7 @@ func TestSetConfig(t *testing.T) {
 		{
 			name: "no client secret",
 			config: map[string]string{
+				"app_id":           "vault",
 				"issuer":           "https://www.duokey.ch",
 				"client_id":        "dke.cockpit",
 				"vault_id":         "HSM",
@@ -486,6 +542,7 @@ func TestSetConfig(t *testing.T) {
 		{
 			name: "no vault id",
 			config: map[string]string{
+				"app_id":           "vault",
 				"issuer":           "https://www.duokey.ch",
 				"client_id":        "dke.cockpit",
 				"client_secret":    "correcthorsebatterystaple",
@@ -503,6 +560,7 @@ func TestSetConfig(t *testing.T) {
 		{
 			name: "no key id",
 			config: map[string]string{
+				"app_id":           "vault",
 				"issuer":           "https://www.duokey.ch",
 				"client_id":        "dke.cockpit",
 				"client_secret":    "correcthorsebatterystaple",
@@ -520,6 +578,7 @@ func TestSetConfig(t *testing.T) {
 		{
 			name: "no header tenant id",
 			config: map[string]string{
+				"app_id":        "vault",
 				"issuer":        "https://www.duokey.ch",
 				"client_id":     "dke.cockpit",
 				"client_secret": "correcthorsebatterystaple", // See https://xkcd.com/936/
@@ -537,6 +596,7 @@ func TestSetConfig(t *testing.T) {
 		{
 			name: "no tenant id",
 			config: map[string]string{
+				"app_id":           "vault",
 				"issuer":           "https://www.duokey.ch",
 				"client_id":        "dke.cockpit",
 				"client_secret":    "correcthorsebatterystaple",
@@ -554,6 +614,7 @@ func TestSetConfig(t *testing.T) {
 		{
 			name: "tenant id is not an uint32 1/2",
 			config: map[string]string{
+				"app_id":           "vault",
 				"issuer":           "https://www.duokey.ch",
 				"client_id":        "dke.cockpit",
 				"client_secret":    "correcthorsebatterystaple",
@@ -572,6 +633,7 @@ func TestSetConfig(t *testing.T) {
 		{
 			name: "tenant id is not an uint32",
 			config: map[string]string{
+				"app_id":           "vault",
 				"issuer":           "https://www.duokey.ch",
 				"client_id":        "dke.cockpit",
 				"client_secret":    "correcthorsebatterystaple",
@@ -590,6 +652,7 @@ func TestSetConfig(t *testing.T) {
 		{
 			name: "no username",
 			config: map[string]string{
+				"app_id":           "vault",
 				"issuer":           "https://www.duokey.ch",
 				"client_id":        "dke.cockpit",
 				"client_secret":    "correcthorsebatterystaple",
@@ -607,6 +670,7 @@ func TestSetConfig(t *testing.T) {
 		{
 			name: "no password",
 			config: map[string]string{
+				"app_id":           "vault",
 				"issuer":           "https://www.duokey.ch",
 				"client_id":        "dke.cockpit",
 				"client_secret":    "correcthorsebatterystaple",
@@ -624,6 +688,7 @@ func TestSetConfig(t *testing.T) {
 		{
 			name: "no scope",
 			config: map[string]string{
+				"app_id":           "vault",
 				"issuer":           "https://www.duokey.ch",
 				"client_id":        "dke.cockpit",
 				"client_secret":    "correcthorsebatterystaple",
@@ -641,6 +706,7 @@ func TestSetConfig(t *testing.T) {
 		{
 			name: "no base URL",
 			config: map[string]string{
+				"app_id":           "vault",
 				"issuer":           "https://www.duokey.ch",
 				"client_id":        "dke.cockpit",
 				"client_secret":    "correcthorsebatterystaple",
@@ -658,6 +724,7 @@ func TestSetConfig(t *testing.T) {
 		{
 			name: "no route for encryption",
 			config: map[string]string{
+				"app_id":           "vault",
 				"issuer":           "https://www.duokey.ch",
 				"client_id":        "dke.cockpit",
 				"client_secret":    "correcthorsebatterystaple",
@@ -675,6 +742,7 @@ func TestSetConfig(t *testing.T) {
 		{
 			name: "no route for decryption",
 			config: map[string]string{
+				"app_id":           "vault",
 				"issuer":           "https://www.duokey.ch",
 				"client_id":        "dke.cockpit",
 				"client_secret":    "correcthorsebatterystaple",
